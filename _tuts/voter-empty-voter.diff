@@ -1,0 +1,24 @@
+diff --git a/src/AppBundle/Security/PostVoter.php b/src/AppBundle/Security/PostVoter.php
+new file mode 100644
+index 0000000..8827b21
+--- /dev/null
++++ b/src/AppBundle/Security/PostVoter.php
+@@ -0,0 +1,17 @@
++<?php
++
++namespace AppBundle\Security;
++
++use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
++use Symfony\Component\Security\Core\Authorization\Voter\Voter;
++
++class PostVoter extends Voter
++{
++    protected function supports($attribute, $subject)
++    {
++    }
++
++    protected function voteOnAttribute($attribute, $subject, TokenInterface $token)
++    {
++    }
++}
+\ No newline at end of file

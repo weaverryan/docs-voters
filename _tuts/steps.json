@@ -1,0 +1,20 @@
+{
+    "steps": [
+        {
+            "id": "start",
+            "name": "start",
+            "description": null
+        },
+        {
+            "id": "voter-empty-voter",
+            "name": "Voter: Empty voter",
+            "description": null
+        },
+        {
+            "id": "voters-implement-it",
+            "name": "Voters: Implement it",
+            "description": null
+        }
+    ],
+    "sha": "ef1d415f312c466d69b0699b358b61ec69b5356e"
+}

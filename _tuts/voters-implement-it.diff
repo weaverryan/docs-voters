@@ -1,0 +1,93 @@
+diff --git a/app/config/services.yml b/app/config/services.yml
+index a0d916a..9b671f7 100644
+--- a/app/config/services.yml
++++ b/app/config/services.yml
+@@ -4,6 +4,11 @@ parameters:
+ #    parameter_name: value
+ 
+ services:
++    app.post_voter:
++        class: AppBundle\Security\PostVoter
++        tags:
++            - { name: security.voter }
++
+     auto_authenticator:
+         class: AppBundle\Security\AutoAuthenticator
+         autowire: true
+diff --git a/src/AppBundle/Security/PostVoter.php b/src/AppBundle/Security/PostVoter.php
+index 8827b21..cc96657 100644
+--- a/src/AppBundle/Security/PostVoter.php
++++ b/src/AppBundle/Security/PostVoter.php
+@@ -2,16 +2,70 @@
+ 
+ namespace AppBundle\Security;
+ 
++use AppBundle\Entity\Post;
++use AppBundle\Entity\User;
+ use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
+ use Symfony\Component\Security\Core\Authorization\Voter\Voter;
+ 
+ class PostVoter extends Voter
+ {
++    const VIEW = 'view';
++    const EDIT = 'edit';
++
+     protected function supports($attribute, $subject)
+     {
++        // if the attribute isn't one we support, return false
++        if (!in_array($attribute, array(self::VIEW, self::EDIT))) {
++            return false;
++        }
++
++        // only vote on Post objects inside this voter
++        if (!$subject instanceof Post) {
++            return false;
++        }
++
++        return true;
+     }
+ 
+     protected function voteOnAttribute($attribute, $subject, TokenInterface $token)
+     {
++        $user = $token->getUser();
++
++        if (!$user instanceof User) {
++            // the user must not be logged in, so we deny access
++            return false;
++        }
++
++        // we know $subject is a Post object, thanks to supports
++        /** @var Post $post */
++        $post = $subject;
++
++        switch($attribute) {
++            case self::VIEW:
++                return $this->canView($post, $user);
++            case self::EDIT:
++                return $this->canEdit($post, $user);
++        }
++
++        throw new \LogicException('This code should not be reached!');
++    }
++
++    private function canView(Post $post, User $user)
++    {
++        // if they can edit, they can view
++        if ($this->canEdit($post, $user)) {
++            return true;
++        }
++
++        // the Post object could have, for example, a method isPrivate()
++        // that checks a Boolean $private property
++        return !$post->isPrivate();
++    }
++
++    private function canEdit(Post $post, User $user)
++    {
++        // this assumes that the data object has a getOwner() method
++        // to get the entity of the user who owns this data object
++        return $user === $post->getOwner();
+     }
+-}
+\ No newline at end of file
++}
