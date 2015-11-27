@@ -42,7 +42,7 @@ class Post
         $this->title = $title;
     }
 
-    public function getIsPrivate()
+    public function isPrivate()
     {
         return $this->isPrivate;
     }
@@ -52,6 +52,9 @@ class Post
         $this->isPrivate = $isPrivate;
     }
 
+    /**
+     * @return User
+     */
     public function getOwner()
     {
         return $this->owner;
