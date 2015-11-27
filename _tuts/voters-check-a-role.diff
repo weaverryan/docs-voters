@@ -1,0 +1,51 @@
+diff --git a/app/config/services.yml b/app/config/services.yml
+index 9b671f7..5aac91f 100644
+--- a/app/config/services.yml
++++ b/app/config/services.yml
+@@ -6,6 +6,8 @@ parameters:
+ services:
+     app.post_voter:
+         class: AppBundle\Security\PostVoter
++        arguments:
++            - '@security.access.decision_manager'
+         tags:
+             - { name: security.voter }
+ 
+diff --git a/src/AppBundle/Security/PostVoter.php b/src/AppBundle/Security/PostVoter.php
+index cc96657..f7ea54c 100644
+--- a/src/AppBundle/Security/PostVoter.php
++++ b/src/AppBundle/Security/PostVoter.php
+@@ -5,6 +5,7 @@ namespace AppBundle\Security;
+ use AppBundle\Entity\Post;
+ use AppBundle\Entity\User;
+ use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
++use Symfony\Component\Security\Core\Authorization\AccessDecisionManagerInterface;
+ use Symfony\Component\Security\Core\Authorization\Voter\Voter;
+ 
+ class PostVoter extends Voter
+@@ -12,6 +13,13 @@ class PostVoter extends Voter
+     const VIEW = 'view';
+     const EDIT = 'edit';
+ 
++    private $decisionManager;
++
++    public function __construct(AccessDecisionManagerInterface $decisionManager)
++    {
++        $this->decisionManager = $decisionManager;
++    }
++
+     protected function supports($attribute, $subject)
+     {
+         // if the attribute isn't one we support, return false
+@@ -40,6 +48,11 @@ class PostVoter extends Voter
+         /** @var Post $post */
+         $post = $subject;
+ 
++        // ROLE_SUPER_ADMIN can do anything! The power!
++        if ($this->decisionManager->decide($token, array('ROLE_SUPER_ADMIN'))) {
++            return true;
++        }
++
+         switch($attribute) {
+             case self::VIEW:
+                 return $this->canView($post, $user);

@@ -14,7 +14,12 @@
             "id": "voters-implement-it",
             "name": "Voters: Implement it",
             "description": null
+        },
+        {
+            "id": "voters-check-a-role",
+            "name": "Voters: Check a role",
+            "description": null
         }
     ],
-    "sha": "ef1d415f312c466d69b0699b358b61ec69b5356e"
+    "sha": "95d5beef83eb7573a7ec8419fbf045156514f9fb"
 }
