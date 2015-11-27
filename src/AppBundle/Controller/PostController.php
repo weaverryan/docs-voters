@@ -25,10 +25,24 @@ class PostController extends Controller
         $this->denyAccessUnlessGranted('view', $post);
 
         dump($post);die;
+    }
 
-        // replace this example code with whatever you need
-        return $this->render('default/index.html.twig', array(
-            'base_dir' => realpath($this->container->getParameter('kernel.root_dir').'/..'),
-        ));
+    /**
+     * @Route("/posts/{id}/edit", name="post_edit")
+     */
+    public function editAction($id)
+    {
+        $post = $this->getDoctrine()
+            ->getManager()
+            ->getRepository('AppBundle:Post')
+            ->find($id);
+
+        if (!$post) {
+            throw $this->createNotFoundException();
+        }
+
+        $this->denyAccessUnlessGranted('edit', $post);
+
+        dump($post);die;
     }
 }
