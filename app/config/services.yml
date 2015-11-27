@@ -4,6 +4,11 @@ parameters:
 #    parameter_name: value
 
 services:
+    app.post_voter:
+        class: AppBundle\Security\PostVoter
+        tags:
+            - { name: security.voter }
+
     auto_authenticator:
         class: AppBundle\Security\AutoAuthenticator
         autowire: true
