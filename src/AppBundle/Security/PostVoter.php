@@ -5,12 +5,20 @@ namespace AppBundle\Security;
 use AppBundle\Entity\Post;
 use AppBundle\Entity\User;
 use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
+use Symfony\Component\Security\Core\Authorization\AccessDecisionManagerInterface;
 use Symfony\Component\Security\Core\Authorization\Voter\Voter;
 
 class PostVoter extends Voter
 {
     const VIEW = 'view';
     const EDIT = 'edit';
+
+    private $decisionManager;
+
+    public function __construct(AccessDecisionManagerInterface $decisionManager)
+    {
+        $this->decisionManager = $decisionManager;
+    }
 
     protected function supports($attribute, $subject)
     {
@@ -39,6 +47,11 @@ class PostVoter extends Voter
         // we know $subject is a Post object, thanks to supports
         /** @var Post $post */
         $post = $subject;
+
+        // ROLE_SUPER_ADMIN can do anything! The power!
+        if ($this->decisionManager->decide($token, array('ROLE_SUPER_ADMIN'))) {
+            return true;
+        }
 
         switch($attribute) {
             case self::VIEW:

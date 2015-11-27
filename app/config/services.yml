@@ -6,6 +6,8 @@ parameters:
 services:
     app.post_voter:
         class: AppBundle\Security\PostVoter
+        arguments:
+            - '@security.access.decision_manager'
         tags:
             - { name: security.voter }
 
